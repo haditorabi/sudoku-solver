@@ -55,7 +55,7 @@ for (let key in puzzle) {
   square.innerText = puzzle[key];
   square.solved = true
 }
-
+// console.log(squares);
 var solveButton = document.getElementById("solve-button");
 var resetButton = document.getElementById("reset-button");
 var validateButton = document.getElementById("validate-button");
