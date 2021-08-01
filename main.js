@@ -47,6 +47,7 @@ function getColumns (colNumber = null) {
     }
   }
   if(colNumber !== undefined && colNumber !== null) {
+    // console.log(colValues[colNumber]);
     return colValues[colNumber];
   } else {
     return colValues;
@@ -75,6 +76,10 @@ function getBlocks (bloNumber = null) {
 
 function removeEmptyElements (set) {
   return set.filter(Number);
+}
+function removeDuplicateElements (set) {
+  return [...new Set(set)];
+  ;
 }
 
 function hasDuplicateValues(sets) {
@@ -107,17 +112,32 @@ function getCellsPossibleValues () {
   }
   return cellPossibilities;
 }
-function getPossibleValues () {
-  let validValues = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+function getPossibleValues (rows, cols, blos) {
+  let validValues = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
+  let currentNeighbors = removeDuplicateElements([...rows, ...cols, ...blos])
+  let possibleValues = validValues.filter(x => !currentNeighbors.includes(x));
+  return possibleValues;
 }
-
+function getRowNumByCellNumber (cellNumber) {
+  return Math.floor(cellNumber/9);
+}
+function getColNumByCellNumber (cellNumber) {
+  return Math.floor(cellNumber%9);
+}
+function getBloNumByCellNumber (cellNumber) {
+  return (Math.floor(Math.floor(cellNumber/9) / 3) * 3) + Math.floor((cellNumber%9)/3);
+}
 function getCellPossibleValues (cellNumber) {
-  let rowNumber = Math.floor(cellNumber/9);
-  let colNumber = Math.floor(cellNumber/9)+Math.floor(cellNumber%9);
-  let bloNumber = (Math.floor(Math.floor(cellNumber/9) / 3) * 3) + Math.floor((cellNumber%9)/3);
-
-  return getPossibleValues(getRows(rowNumber), getColumns(colNumber), getBlocks(bloNumber));
+  let rowNumber = getRowNumByCellNumber(cellNumber);
+  let colNumber = getColNumByCellNumber(cellNumber);
+  let bloNumber = getBloNumByCellNumber(cellNumber);
+  return getPossibleValues(
+    removeEmptyElements( getRows(rowNumber)), 
+    removeEmptyElements( getColumns(colNumber)), 
+    removeEmptyElements( getBlocks(bloNumber))
+  );
 }
+
 const invalidPuzzle = {
   "5_0": 2,
 	"6_0": 9,
@@ -180,18 +200,30 @@ for (let key in validPuzzle) {
   square.innerText = validPuzzle[key];
   square.solved = true
 }
+
 function solvePuzzle() {
   if(isValidPuzzle()) {
-    // getMinSetLength()
-    console.log(getCellsPossibleValues());
-    // console.log(getRows(8));
-    // invalidPuzzleDiv.classList.add("hide");
-    
+    let cellPossibilities = getCellsPossibleValues();
+    for(i = 1; i < 9; i++) {
+      for(j = 1; j < cellPossibilities.length; j++) {
+        if(cellPossibilities[j].length == i) {
+          let square = squares[getRowNumByCellNumber(j)+"_"+getColNumByCellNumber(j)];
+          // square.innerText = validPuzzle[cellPossibilities[j][0]];
+          if (isValidPuzzle()) {
+          square.solved = true;
+          } else {
+
+          // console.log(cellPossibilities[j]);
+
+          return;
+        }
+        }
+      }
+    }
   } else {
     const invalidPuzzleDiv = document.getElementById("invalid-puzzle");
     invalidPuzzleDiv.classList.remove("hide");
   }
-  // console.log(isValidPuzzle());
 }
 var solveButton = document.getElementById("solve-button");
 var resetButton = document.getElementById("reset-button");
