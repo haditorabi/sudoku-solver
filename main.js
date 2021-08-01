@@ -47,37 +47,48 @@ function getColumns () {
 function getBlocks () {
   let blockValues = [];
   let blockNumber = 0;
-  for (let brs = 0; brs < 3; y++) {
-    let blockColStart = Math.floor(brs / 3) * 3;
-    for (let x = 0; x < 9; x++) {
-  let blockRowStart = Math.floor(x / 3) * 3;
   for (let y = 0; y < 9; y++) {
     for (let x = 0; x < 9; x++) {
-      if((y%3) ==2  || (x%3) == 2) {
-        blockNumber = blockNumber+1;
+      let squareValue = "";
+      blockNumber = (Math.floor(y/3)*3)+Math.floor(x/3);
+      if(!Array.isArray(blockValues[blockNumber])) {
+        blockValues[blockNumber] = [];
       }
-      blockValues[blockNumber] = [];
-      // let squareValue = squares[x+"_"+y].innerText;
-      // blockValues[x].push(squareValue);
-      blockValues[blockNumber].push(blockNumber);
+      squareValue = squares[x+"_"+y].innerText;
+      blockValues[blockNumber].push(squareValue);
     }
   }
   return blockValues;
 }
-function checkIfDuplicateValues(w){
-  return new Set(w).size !== w.length 
+function removeEmptyElements (set) {
+  return set.filter(Number);
 }
 
-function validationRows(rowNumber = null) {
-    // let hasDuplicate = checkIfDuplicateValues(rowValues);
+function hasDuplicateValues(sets) {
+  let checkSet = [];
+  sets.forEach((set) => {
+    let filteredSet = removeEmptyElements(set);
+    hasDuplicate =  new Set(filteredSet).size !== filteredSet.length
+    checkSet.push(hasDuplicate);
+  })
+  let result = checkSet.includes(true);
+  return result;
+}
 
-    console.log(getBlocks());
+function areValidRows() {
+  return !hasDuplicateValues(getRows());
 }
-function validationColumns() {
+function areValidColumns() {
+  return !hasDuplicateValues(getColumns());
 }
-function validationBlocks() {
+function areValidBlocks() {
+  return !hasDuplicateValues(getBlocks());
 }
-const puzzle = {
+function isValidPuzzle () {
+  // console.log(areValidBlocks());
+  return areValidBlocks() && areValidColumns() && areValidRows;
+}
+const invalidPuzzle = {
   "5_0": 2,
 	"6_0": 9,
 	"8_0": 4,
@@ -102,18 +113,53 @@ const puzzle = {
 	"4_7": 4,
 	"8_7": 5,
 	"0_8": 3,
+	"2_8": 6,
+	"3_8": 2,
+}
+var validPuzzle = {
+	"5_0": 2,
+	"6_0": 9,
+	"8_0": 4,
+	"0_1": 9,
+	"4_1": 6,
+	"0_2": 6,
+	"1_2": 2,
+	"5_2": 7,
+	"0_3": 7,
+	"2_3": 6,
+	"5_3": 9,
+	"6_3": 5,
+	"0_4": 4,
+	"8_4": 9,
+	"2_5": 8,
+	"3_5": 5,
+	"6_5": 6,
+	"8_5": 2,
+	"3_6": 3,
+	"7_6": 8,
+	"8_6": 7,
+	"4_7": 4,
+	"8_7": 5,
+	"0_8": 3,
 	"2_8": 1,
 	"3_8": 2,
 }
 
-for (let key in puzzle) {
+for (let key in validPuzzle) {
   let square = squares[key]
-  square.innerText = puzzle[key];
+  square.innerText = validPuzzle[key];
   square.solved = true
 }
 // console.log(squares);
 function solvePuzzle() {
-  validationRows();
+  if(isValidPuzzle()) {
+    // invalidPuzzleDiv.classList.add("hide");
+    
+  } else {
+    const invalidPuzzleDiv = document.getElementById("invalid-puzzle");
+    invalidPuzzleDiv.classList.remove("hide");
+  }
+  // console.log(isValidPuzzle());
 }
 var solveButton = document.getElementById("solve-button");
 var resetButton = document.getElementById("reset-button");

@@ -59,3 +59,13 @@ html, body {
     margin-right: 3px;
     color: #666;
   }
+  .invalid-puzzle {
+    background-color :rgb(184, 74, 74);
+    color: white;
+    margin-top: 4px;
+    padding: 5px 10px;
+    border-radius: 3px;
+  }
+  .hide {
+    display: none;
+  }
