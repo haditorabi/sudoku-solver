@@ -137,7 +137,21 @@ function getCellPossibleValues (cellNumber) {
     removeEmptyElements( getBlocks(bloNumber))
   );
 }
-
+function findMinimumPossibilitiesCell (sets) {
+  for(i = 1; i < 9; i++) {
+    for(j = 1; j < sets.length; j++) {
+      if(sets[j].length == i) {
+        // let square = squares[getRowNumByCellNumber(j)+"_"+getColNumByCellNumber(j)];
+        // square.innerText = validPuzzle[cellPossibilities[j][0]];
+        // if (isValidPuzzle()) {
+        // square.solved = true;
+        return j;
+        break;
+        // }
+      }
+    }
+  }
+}
 const invalidPuzzle = {
   "5_0": 2,
 	"6_0": 9,
@@ -203,23 +217,22 @@ for (let key in validPuzzle) {
 
 function solvePuzzle() {
   if(isValidPuzzle()) {
-    let cellPossibilities = getCellsPossibleValues();
-    for(i = 1; i < 9; i++) {
-      for(j = 1; j < cellPossibilities.length; j++) {
-        if(cellPossibilities[j].length == i) {
-          let square = squares[getRowNumByCellNumber(j)+"_"+getColNumByCellNumber(j)];
-          // square.innerText = validPuzzle[cellPossibilities[j][0]];
-          if (isValidPuzzle()) {
-          square.solved = true;
-          } else {
-
-          // console.log(cellPossibilities[j]);
-
-          return;
-        }
-        }
-      }
+    let solved = true;
+    let lastSuggestions = []
+    while (solved) {
+      let cellPossibilities = getCellsPossibleValues();
+      let minimumPossibilitiesCell = findMinimumPossibilitiesCell(cellPossibilities);
+      let key = getRowNumByCellNumber(minimumPossibilitiesCell)+"_"+getColNumByCellNumber(minimumPossibilitiesCell);
+      // console.log(minimumPossibilitiesCell);
+      let square = squares[key]
+      square.innerText = validPuzzle[key];
+      
+      // square.solved = true
+    
+      solved = false;
     }
+    // console.log(cellPossibilities);
+
   } else {
     const invalidPuzzleDiv = document.getElementById("invalid-puzzle");
     invalidPuzzleDiv.classList.remove("hide");
