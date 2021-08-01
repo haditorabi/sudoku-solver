@@ -21,7 +21,7 @@ for (let x = 0; x < 9; x++) {
     squares[x+"_"+y] = square;
   }
 }
-function getRows () {
+function getRows (rowNumber = null) {
   let rowValues = [];
   for (let y = 0; y < 9; y++) {
     rowValues[y] = [];
@@ -30,10 +30,14 @@ function getRows () {
       rowValues[y].push(squareValue);
     }
   }
-  return rowValues;
+  if(rowNumber !== undefined && rowNumber !== null) {
+    return rowValues[rowNumber];
+  } else {
+    return rowValues;
+  }
 }
 
-function getColumns () {
+function getColumns (colNumber = null) {
   let colValues = [];
   for (let x = 0; x < 9; x++) {
     colValues[x] = [];
@@ -42,9 +46,13 @@ function getColumns () {
       colValues[x].push(squareValue);
     }
   }
-  return colValues;
+  if(colNumber !== undefined && colNumber !== null) {
+    return colValues[colNumber];
+  } else {
+    return colValues;
+  }
 }
-function getBlocks () {
+function getBlocks (bloNumber = null) {
   let blockValues = [];
   let blockNumber = 0;
   for (let y = 0; y < 9; y++) {
@@ -58,8 +66,13 @@ function getBlocks () {
       blockValues[blockNumber].push(squareValue);
     }
   }
-  return blockValues;
+  if(bloNumber !== undefined && bloNumber !== null) {
+    return blockValues[bloNumber];
+  } else {
+    return blockValues;
+  }
 }
+
 function removeEmptyElements (set) {
   return set.filter(Number);
 }
@@ -85,8 +98,25 @@ function areValidBlocks() {
   return !hasDuplicateValues(getBlocks());
 }
 function isValidPuzzle () {
-  // console.log(areValidBlocks());
   return areValidBlocks() && areValidColumns() && areValidRows;
+}
+function getCellsPossibleValues () {
+  let cellPossibilities = [];
+  for(i = 0; i < 81; i++) {
+    cellPossibilities.push(getCellPossibleValues(i));
+  }
+  return cellPossibilities;
+}
+function getPossibleValues () {
+  let validValues = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+}
+
+function getCellPossibleValues (cellNumber) {
+  let rowNumber = Math.floor(cellNumber/9);
+  let colNumber = Math.floor(cellNumber/9)+Math.floor(cellNumber%9);
+  let bloNumber = (Math.floor(Math.floor(cellNumber/9) / 3) * 3) + Math.floor((cellNumber%9)/3);
+
+  return getPossibleValues(getRows(rowNumber), getColumns(colNumber), getBlocks(bloNumber));
 }
 const invalidPuzzle = {
   "5_0": 2,
@@ -150,9 +180,11 @@ for (let key in validPuzzle) {
   square.innerText = validPuzzle[key];
   square.solved = true
 }
-// console.log(squares);
 function solvePuzzle() {
   if(isValidPuzzle()) {
+    // getMinSetLength()
+    console.log(getCellsPossibleValues());
+    // console.log(getRows(8));
     // invalidPuzzleDiv.classList.add("hide");
     
   } else {
