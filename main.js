@@ -47,7 +47,6 @@ function getColumns (colNumber = null) {
     }
   }
   if(colNumber !== undefined && colNumber !== null) {
-    // console.log(colValues[colNumber]);
     return colValues[colNumber];
   } else {
     return colValues;
@@ -108,7 +107,10 @@ function isValidPuzzle () {
 function getCellsPossibleValues () {
   let cellPossibilities = [];
   for(i = 0; i < 81; i++) {
-    cellPossibilities.push(getCellPossibleValues(i));
+    cellPossibilities[convertCellNumberToKey(i)] = [];
+    if(squares[convertCellNumberToKey(i)].innerText == "") {
+      cellPossibilities[convertCellNumberToKey(i)].push(getCellPossibleValues(i));
+    }
   }
   return cellPossibilities;
 }
@@ -137,21 +139,21 @@ function getCellPossibleValues (cellNumber) {
     removeEmptyElements( getBlocks(bloNumber))
   );
 }
-function findMinimumPossibilitiesCell (sets) {
+function findMinimumCellPossibilities (sets) {
   for(i = 1; i < 9; i++) {
+    console.log(sets)
     for(j = 1; j < sets.length; j++) {
       if(sets[j].length == i) {
-        // let square = squares[getRowNumByCellNumber(j)+"_"+getColNumByCellNumber(j)];
-        // square.innerText = validPuzzle[cellPossibilities[j][0]];
-        // if (isValidPuzzle()) {
-        // square.solved = true;
         return j;
         break;
-        // }
       }
     }
   }
 }
+function convertCellNumberToKey (cellNumber) {
+    return getRowNumByCellNumber(cellNumber)+"_"+getColNumByCellNumber(cellNumber);
+}
+
 const invalidPuzzle = {
   "5_0": 2,
 	"6_0": 9,
@@ -202,11 +204,11 @@ var validPuzzle = {
 	"3_6": 3,
 	"7_6": 8,
 	"8_6": 7,
-	"4_7": 4,
-	"8_7": 5,
-	"0_8": 3,
-	"2_8": 1,
-	"3_8": 2,
+	// "4_7": 4,
+	// "8_7": 5,
+	// "0_8": 3,
+	// "2_8": 1,
+	// "3_8": 2,
 }
 
 for (let key in validPuzzle) {
@@ -214,24 +216,29 @@ for (let key in validPuzzle) {
   square.innerText = validPuzzle[key];
   square.solved = true
 }
+function checkPossibilities() {
+  let cellPossibilities = getCellsPossibleValues();
+  let minimumCellPossibilities = findMinimumCellPossibilities(cellPossibilities);
+  console.log(minimumCellPossibilities);
+  return [minimumCellPossibilities, cellPossibilities[minimumCellPossibilities]];
+}
 
 function solvePuzzle() {
   if(isValidPuzzle()) {
-    let solved = true;
-    let lastSuggestions = []
-    while (solved) {
-      let cellPossibilities = getCellsPossibleValues();
-      let minimumPossibilitiesCell = findMinimumPossibilitiesCell(cellPossibilities);
-      let key = getRowNumByCellNumber(minimumPossibilitiesCell)+"_"+getColNumByCellNumber(minimumPossibilitiesCell);
-      // console.log(minimumPossibilitiesCell);
-      let square = squares[key]
-      square.innerText = validPuzzle[key];
+    let solved = 0;
+    let suggestions = [];
+    let [key, possibilities] = checkPossibilities();
+    // possibilities.forEach((possibility) => {
       
-      // square.solved = true
+    // });
+
+    // let square = squares[key]
+    // square.innerText = cellPossibilities[minimumCellPossibilities];
     
-      solved = false;
-    }
-    // console.log(cellPossibilities);
+    // while (solved < 100) {
+    //   square.solved = true
+    //   solved++
+    // }
 
   } else {
     const invalidPuzzleDiv = document.getElementById("invalid-puzzle");
